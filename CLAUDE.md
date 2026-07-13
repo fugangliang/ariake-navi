@@ -38,9 +38,11 @@
 - オーナーからの実測フィードバックで OVERRIDE_KM / lo,hi / headwayOf を随時較正する運用
 
 ## 直近タスク（このセッションでやること）
-1. GitHubリポジトリ `ariake-navi` を作成し、この index.html + CLAUDE.md をコミット
-2. GitHub Pages を有効化（main / root）。公開URLを確認して報告
-3. オーナーがiPhone Safariで開き「ホーム画面に追加」して完了
+1. ~~GitHubリポジトリ `ariake-navi` を作成し、この index.html + CLAUDE.md をコミット~~ ✅ 完了（2026-07-13）
+2. ~~GitHub Pages を有効化（main / root）。公開URLを確認して報告~~ ✅ 完了
+   - リポジトリ: https://github.com/fugangliang/ariake-navi （public）
+   - 公開URL: **https://fugangliang.github.io/ariake-navi/**
+3. オーナーがiPhone Safariで開き「ホーム画面に追加」して完了 ← RF作業待ち
 
 ## 中期ロードマップ（優先順）
 1. **ODPT API連携**（公共交通オープンデータセンター、要開発者登録・無料）
