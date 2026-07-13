@@ -65,10 +65,16 @@ input[type=text]:focus{border-color:var(--amber)}
 .empty{background:var(--panel);border:1px dashed var(--line);border-radius:12px;padding:24px;
   text-align:center;font-size:13px;color:var(--sub);line-height:1.9}
 .empty b{color:var(--amber);font-weight:600}
+.capctl{display:flex;align-items:center;gap:8px}
+.cbtn{width:44px;height:40px;background:var(--bg);border:1px solid var(--line);border-radius:8px;
+  color:var(--amber);font-size:20px;font-weight:700}
+.cbtn:active{border-color:var(--amber)}
+.capv{flex:1;text-align:center;font-size:17px;font-weight:700;background:var(--bg);
+  border:1px solid var(--line);border-radius:8px;padding:9px 0}
 </style>
 </head>
 <body>
-<div class="hdr"><div class="lamp"></div><h1>有明帰宅ナビ</h1><span class="cap mono">🚕 上限 ¥3,000</span></div>
+<div class="hdr"><div class="lamp"></div><h1>有明帰宅ナビ</h1><span class="cap mono" id="capbadge">🚕 上限 ¥3,000</span></div>
 <p class="tag">制約内で最速 → ±5分は安い方 ｜ Brillia有明ST着 door-to-door</p>
 
 <div class="panel">
@@ -81,9 +87,18 @@ input[type=text]:focus{border-color:var(--amber)}
     <div><label>出発時刻</label><input type="time" id="tm" class="mono"></div>
     <div><label>曜日</label><button id="wk">平日</button></div>
   </div>
+  <div class="row">
+    <div style="flex:1"><label>タクシー上限（500円刻み）</label>
+      <div class="capctl">
+        <button class="cbtn" id="capdn">−</button>
+        <div class="capv mono" id="capv">¥3,000</div>
+        <button class="cbtn" id="capup">＋</button>
+      </div>
+    </div>
+  </div>
 </div>
 
-<div id="out"><div class="empty">場所を入力して判定すると、効用関数<br><b>「¥3,000上限 → 最速 → ±5分は安い方」</b><br>で最適な帰宅ルートを出す</div></div>
+<div id="out"><div class="empty">場所を入力して判定すると、効用関数<br><b>「タクシー上限内 → 最速 → ±5分は安い方」</b><br>で最適な帰宅ルートを出す</div></div>
 
 <script>
 const LINE = {
@@ -493,7 +508,9 @@ function buildOptions(zone, timeMin, weekend) {
   return { opts, night, rush };
 }
 
-const CAP = 3000;
+/* タクシー上限: UIで500円刻み可変（既定¥3,000、localStorage保存） */
+const CAP_DEF = 3000, CAP_MIN = 500, CAP_MAX = 10000;
+let CAP = CAP_DEF;
 
 /* 路線×時間帯の運行間隔モデル（分）。分単位の時刻表はClaude Code版でAPI連携予定。
    待ち時間は基準5分間隔を内包済みのため、超過分のみ加算する。 */
@@ -534,6 +551,18 @@ $("wk").textContent = weekend ? "土日祝" : "平日";
 $("wk").onclick = ()=>{ weekend=!weekend; $("wk").textContent = weekend?"土日祝":"平日"; rerender(); };
 $("tm").onchange = rerender;
 let currentZone = null;
+
+function setCap(v){
+  if (!isFinite(v)) v = CAP_DEF;
+  CAP = Math.min(CAP_MAX, Math.max(CAP_MIN, Math.round(v/500)*500));
+  try{ localStorage.setItem("cap", CAP); }catch(e){}
+  $("capv").textContent = "¥"+fmtYen(CAP);
+  $("capbadge").textContent = "🚕 上限 ¥"+fmtYen(CAP);
+  rerender();
+}
+$("capdn").onclick = ()=> setCap(CAP-500);
+$("capup").onclick = ()=> setCap(CAP+500);
+try{ setCap(parseInt(localStorage.getItem("cap"),10) || CAP_DEF); }catch(e){ setCap(CAP_DEF); }
 
 function findMatches(qs){
   const s = norm(qs);
@@ -614,7 +643,7 @@ function rerender(){
   if(best.remain) h+='<p class="warn">⏱ 終電まで約'+best.remain+'分（'+best.last+'発が最終目安）</p>';
   if(best.headway) h+='<p class="info">🚃 この時間帯の運行間隔 約'+best.headway+'分（待ち時間は所要に反映済み）</p>';
   if(best.note) h+='<p class="info">'+best.note+'</p>';
-  if(!capOK) h+='<p class="warn">⚠ 全選択肢が上限¥3,000超過（終電後）。最安案を表示。</p>';
+  if(!capOK) h+='<p class="warn">⚠ 全選択肢が上限¥'+fmtYen(CAP)+'超過。最安案を表示。</p>';
   h+='</div>';
   h+='<div class="alts">'+others.map(o=>
     '<div class="alt'+(o.available?'':' na')+'"><div class="al">'+o.label+
