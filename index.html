@@ -323,12 +323,24 @@ const METRO = {
       { atIdx:10, atName:"森下",   atKm:6.0, addMin:5, thenMin:7,  hub:"kachidoki", note:"森下乗換→大江戸線" },
       { atIdx:4,  atName:"九段下", atKm:9.0, addMin:5, thenMin:10, hub:"monnaka",   note:"九段下乗換→東西線" } ],
     stations:["新宿","新宿三丁目","曙橋","市ケ谷","九段下","神保町","小川町","岩本町","馬喰横山","浜町","森下","菊川","住吉","西大島","大島","東大島","船堀","一之江","瑞江","篠崎","本八幡"] },
+  /* 有明直結2線: ハブ乗換ではなく直乗り→下車徒歩（direct:true） */
+  yurikamome: { dirCoef:0.5, minPerStop:2.0, hub:null, hubIdx:null,
+    transit:{ atIdx:11, atName:"有明", atKm:0.5, desc:"ゆりかもめ→有明", direct:true, walkMin:4,
+      addFare:100, last:"23:35", line:"yurikamome" },
+    stations:["新橋","汐留","竹芝","日の出","芝浦ふ頭","お台場海浜公園","台場","東京国際クルーズターミナル","テレコムセンター","青海","東京ビッグサイト","有明","有明テニスの森","市場前","新豊洲","豊洲"] },
+  rinkai: { dirCoef:1.8, minPerStop:2.6, hub:null, hubIdx:null,
+    transit:{ atIdx:2, atName:"国際展示場", atKm:0.7, desc:"りんかい線→国際展示場", direct:true, walkMin:6,
+      addFare:120, last:"23:45", line:"rinkai" },
+    stations:["新木場","東雲","国際展示場","東京テレポート","天王洲アイル","品川シーサイド","大井町","大崎"] },
 };
 
 /* 直行距離の実測補正（湾岸寄り駅は|Δidx|モデルが過大になるため） */
 const OVERRIDE_KM = {
   "木場":3.4, "東陽町":4.0, "南砂町":4.8, "西葛西":6.0, "葛西":6.8,
   "辰巳":2.6, "新木場":3.6, "浅草":7.5, "築地市場":5.5, "八丁堀":5.5, "目黒":10.8, "五反田":9.5, "白金台":9.8, "大崎":9.8, "越中島":3.0, "潮見":2.5, "中目黒":10.5, "北千住":11.0, "水天宮前":5.0, "住吉":4.5, "錦糸町":5.5, "押上":6.2,
+  /* 湾岸2線（橋・運河迂回で|Δidx|モデルが過小になる駅） */
+  "日の出":5.5, "芝浦ふ頭":6.0, "東京国際クルーズターミナル":3.5, "テレコムセンター":3.0, "青海":2.5,
+  "東雲":1.8, "天王洲アイル":7.5, "品川シーサイド":8.5,
 };
 
 const norm = (s)=> s.replace(/ヶ/g,"ケ").replace(/駅$/,"").trim();
@@ -385,9 +397,12 @@ function genStationZone(stName) {
     if (L.transit) {
       const t = L.transit;
       const seg1 = Math.round(D(idx,t.atIdx)*mps);
-      const lo = 5+seg1+6+t.thenMin+4;
-      const cand = { desc:t.desc, lo, hi:lo+8,
-        fare:(seg1?fareRail(seg1):0)+t.addFare, last:t.last, line:t.line };
+      if (t.atKm !== undefined) kms.push(t.atKm + D(idx,t.atIdx)*coef);
+      // direct: 乗換なしで下車駅→徒歩。それ以外は下車後に乗換＋後続区間
+      const lo = t.direct ? 5+seg1+(t.walkMin||4) : 5+seg1+6+t.thenMin+4;
+      const fare = t.direct ? (seg1 ? fareRail(seg1)+t.addFare : 0)
+                            : (seg1?fareRail(seg1):0)+t.addFare;
+      const cand = { desc:t.desc, lo, hi:lo+8, fare, last:t.last, line:t.line };
       if (!transit || cand.lo < transit.lo) transit = cand;
     }
   });
@@ -560,7 +575,7 @@ async function aiResolve(qs){
     const res = await fetch("https://api.anthropic.com/v1/messages",{
       method:"POST",headers:{"Content-Type":"application/json"},
       body:JSON.stringify({model:"claude-sonnet-4-6",max_tokens:1000,
-        messages:[{role:"user",content:'東京の場所「'+qs+'」から徒歩で最も近い鉄道駅名を1つ答えよ（東京メトロ・都営地下鉄・JRの正式駅名のみ）。不明なら "none"。JSONのみで回答: {"station":"駅名"}'}]})});
+        messages:[{role:"user",content:'東京の場所「'+qs+'」から徒歩で最も近い鉄道駅名を1つ答えよ（東京メトロ・都営地下鉄・JR・ゆりかもめ・りんかい線の正式駅名のみ）。不明なら "none"。JSONのみで回答: {"station":"駅名"}'}]})});
     const data = await res.json();
     const text = (data.content||[]).filter(c=>c.type==="text").map(c=>c.text).join("");
     const st = norm(JSON.parse(text.replace(/```json|```/g,"").trim()).station||"");
@@ -569,7 +584,7 @@ async function aiResolve(qs){
     else if(STMAP[st]){ $("aimsg").textContent='「'+qs+'」→ 最寄り '+st+'駅 と判定'; setZone("st:"+st); }
     else $("aimsg").textContent="該当駅を特定できず。駅名で再入力を。";
   }catch(e){
-    $("aimsg").textContent="AI判定はClaude.ai上でのみ動作。231駅の辞書は使えるので駅名・地名で入力を。";
+    $("aimsg").textContent="AI判定はClaude.ai上でのみ動作。250駅の辞書は使えるので駅名・地名で入力を。";
   }
 }
 
