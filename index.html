@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="有明帰宅">
+<meta name="theme-color" content="#0B0E14">
+<link rel="apple-touch-icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALQAAAC0CAIAAACyr5FlAAACmElEQVR4nO3cMW4UMRiA0VlERaQ0iXIIrpSaU1HnShwiUlpqipWAIh9awc7+g/XeAWa89jd2tT7d3T9u8J4P0wPguMRBEgdJHCRxkMRBEgdJHCRxkMRBEgdJHCRxkMRBEgdJHCRxkMRBEgdJHCRxkMRBEgdJHCRxkMRBEgdJHCRxkMRBEgdJHCRxkMRBEgdJHCRxkMRBEgfp4/QAfnl9eZsewlE8PT9MD2Hbtu10hEtqZfGu8UTmjxVllPGZGY5j/Pcf3Oz8TMahjEsMztL8scJhjcVh27jc1FzZOUjiIImDJA6SOEjiIImDJA6SOEjiIImDJA6SOEjiIImDJA6SOEjiIImDJA6SOEjiIImDdKB/2e/n0+cvezz2+7evezz2OBaPY6csfn/4womsfKzsWsaN3zJi2ThuuWar9rFmHLdfrSX7WDMOrmLBOKY+4vU2jwXj4FrEQRIHSRwkcZDEQRIHSRwkcZDEQRIHSRwkcZDEQRIHSRwkcZDEQRIHSRwkcZDEQRIHSRwkcZDEQRIHSRykBeOYumpnvSt+FoyDa1kzjtt/xOttG9uqcWy3Xa0ly9gWjmO71ZqtWsa2/FWT55VzD+nfWTyOs+VXcScrHyv8I3GQxEESB0kcJHGQxEESB0kcJHGQxEESB0kcJHGQxEESB0kcJHGQxEESB0kcJHGQxEEai+Pp+WHq1f+dqbmyc5Am47B5XGJwloZ3Dn382ez8zB8r+ijjM3O6u3+cHcFPry9v00M4ivEszg4UB0czf6xwWOIgiYMkDpI4SOIgiYMkDpI4SOIgiYMkDpI4SOIgiYMkDpI4SOIgiYMkDpI4SOIgiYMkDpI4SOIgiYMkDpI4SOIgiYMkDpI4SOIgiYMkDpI4SOIg/QA7mEmK+r0diwAAAABJRU5ErkJggg==">
+<title>有明帰宅ナビ</title>
+<style>
+:root{--bg:#0B0E14;--panel:#131826;--line:#232B3E;--amber:#F5B301;--text:#E8EAF0;--sub:#8A93A8;--ok:#4CC38A;--warn:#E5484D}
+*{box-sizing:border-box;margin:0;padding:0}
+html{background:var(--bg)}
+body{background:var(--bg);color:var(--text);font-family:'Hiragino Sans','Noto Sans JP',sans-serif;
+  padding:calc(env(safe-area-inset-top) + 16px) 16px calc(env(safe-area-inset-bottom) + 24px);
+  max-width:480px;margin:0 auto;min-height:100vh}
+.mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-variant-numeric:tabular-nums}
+.hdr{display:flex;align-items:center;gap:10px;margin-bottom:4px}
+.lamp{width:14px;height:14px;border-radius:3px;background:var(--amber);box-shadow:0 0 14px var(--amber)}
+h1{font-size:20px;letter-spacing:.04em}
+.cap{margin-left:auto;font-size:11px;padding:3px 8px;border:1px solid var(--amber);border-radius:6px;color:var(--amber)}
+.tag{font-size:11px;color:var(--sub);margin-bottom:18px}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:14px}
+label{font-size:11px;color:var(--sub);display:block;margin-bottom:4px}
+input[type=text],input[type=time]{width:100%;background:var(--bg);border:1px solid var(--line);
+  border-radius:8px;color:var(--text);padding:10px 12px;font-size:16px;outline:none}
+input[type=text]:focus{border-color:var(--amber)}
+#go{width:100%;margin-top:12px;padding:12px;border:none;border-radius:8px;font-size:16px;font-weight:700;
+  background:var(--amber);color:#1A1400;box-shadow:0 0 16px rgba(245,179,1,.25)}
+#go:disabled{background:var(--line);color:var(--sub);box-shadow:none}
+.row{display:flex;gap:12px;margin-top:12px}
+.row>div:first-child{flex:1}
+#wk{background:var(--bg);border:1px solid var(--line);border-radius:8px;color:var(--text);padding:10px 14px;font-size:14px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.chip{background:var(--bg);border:1px solid var(--amber);color:var(--amber);border-radius:999px;
+  padding:5px 12px;font-size:13px}
+.msg{font-size:11px;color:var(--amber);margin-top:8px}
+.ctx{display:flex;gap:8px;align-items:center;font-size:11px;color:var(--sub);margin-bottom:8px}
+.badge{padding:2px 6px;border-radius:4px;font-size:10px}
+.best{background:var(--panel);border:1.5px solid var(--amber);border-radius:12px;padding:16px;
+  box-shadow:0 0 24px rgba(245,179,1,.12);margin-bottom:12px}
+.bl{font-size:11px;color:var(--amber)}
+.bt{font-size:18px;font-weight:700;margin:2px 0 10px}
+.steps{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+.st{font-size:11px;padding:5px 8px;border-radius:5px;background:var(--bg);border:1px solid var(--line)}
+.nums{display:flex;gap:20px;align-items:flex-end}
+.nl{font-size:10px;color:var(--sub)}
+.nv{font-size:24px;font-weight:700}
+.nv small{font-size:13px}
+.warn{font-size:11px;color:var(--warn);margin-top:8px}
+.info{font-size:11px;color:var(--sub);margin-top:8px}
+.alts{border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.alt{display:flex;align-items:center;gap:12px;background:var(--panel);border-bottom:1px solid var(--line);padding:12px 16px}
+.alt:last-child{border-bottom:none}
+.alt.na{opacity:.45}
+.al{flex:1;min-width:0;font-size:13px;font-weight:500}
+.al .sm{font-size:10px;color:var(--sub);font-weight:400}
+.al .bad{font-size:10px;color:var(--warn);margin-left:6px}
+.ar{text-align:right;font-size:13px}
+.ar .sm{font-size:10px;color:var(--sub)}
+.ft{font-size:10px;color:var(--sub);line-height:1.7;margin-top:16px}
+.empty{background:var(--panel);border:1px dashed var(--line);border-radius:12px;padding:24px;
+  text-align:center;font-size:13px;color:var(--sub);line-height:1.9}
+.empty b{color:var(--amber);font-weight:600}
+</style>
+</head>
+<body>
+<div class="hdr"><div class="lamp"></div><h1>有明帰宅ナビ</h1><span class="cap mono">🚕 上限 ¥3,000</span></div>
+<p class="tag">制約内で最速 → ±5分は安い方 ｜ Brillia有明ST着 door-to-door</p>
+
+<div class="panel">
+  <label>いまいる場所（地名・駅名）</label>
+  <input type="text" id="q" placeholder="例: 西麻布 / 神谷町 / 歌舞伎町" autocomplete="off">
+  <button id="go">帰宅ルートを判定</button>
+  <div id="chips"></div>
+  <div id="aimsg"></div>
+  <div class="row">
+    <div><label>出発時刻</label><input type="time" id="tm" class="mono"></div>
+    <div><label>曜日</label><button id="wk">平日</button></div>
+  </div>
+</div>
+
+<div id="out"><div class="empty">場所を入力して判定すると、効用関数<br><b>「¥3,000上限 → 最速 → ±5分は安い方」</b><br>で最適な帰宅ルートを出す</div></div>
+
+<script>
+const LINE = {
+  ginza:    { n: "銀座線",     c: "#FF9500" },
+  maru:     { n: "丸ノ内線",   c: "#F62E36" },
+  hibiya:   { n: "日比谷線",   c: "#B5B5AC" },
+  tozai:    { n: "東西線",     c: "#009BBF" },
+  yuraku:   { n: "有楽町線",   c: "#C1A470" },
+  oedo:     { n: "大江戸線",   c: "#B6007A" },
+  jr:       { n: "JR",         c: "#7CB342" },
+  yurikamome:{ n:"ゆりかもめ", c: "#1F8FCC" },
+  rinkai:   { n: "りんかい線", c: "#00418E" },
+  chiyoda:  { n: "千代田線",   c: "#00BB85" },
+  hanzomon: { n: "半蔵門線",   c: "#8F76D6" },
+  namboku:  { n: "南北線",     c: "#00AC9B" },
+  fukutoshin:{ n:"副都心線",   c: "#9C5E31" },
+  yamanote: { n: "JR山手線",   c: "#80C241" },
+  keiyo:    { n: "JR京葉線",   c: "#C9252F" },
+  sobu:     { n: "JR中央・総武線", c: "#FFD400" },
+  oedoBranch:{ n:"大江戸線",   c: "#B6007A" },
+  toeiasakusa:{ n:"浅草線",    c: "#EC6E65" },
+  mita:     { n: "三田線",     c: "#006AB8" },
+  toeishinjuku:{ n:"新宿線",   c: "#B0C124" },
+};
+
+/* hub: rail区間 + ラストワンマイルタクシー
+   lo/hi = door-to-door合計（駅アクセス・乗換・タクシー捕まえ込み設計値） */
+const ZONES = [
+  { id:"shinbashi", name:"新橋・汐留", aliases:["新橋","汐留","内幸町","カレッタ"],
+    direct:{ d:2500, n:2900, lo:11, hi:15, toll:0 },
+    hubs:[],
+    transit:{ desc:"ゆりかもめ→有明", lo:30, hi:35, fare:400, last:"23:40", line:"yurikamome" } },
+
+  { id:"kamiyacho", name:"神谷町・虎ノ門", aliases:["神谷町","虎ノ門","虎ノ門ヒルズ","愛宕","麻布台","麻布台ヒルズ"],
+    direct:{ d:2800, n:3300, lo:14, hi:19, toll:700 },
+    hubs:[
+      { hub:"新橋", line:"ginza", railMin:2, railFare:180, last:"24:10",
+        taxi:{d:2500,n:2900}, lo:18, hi:23, note:"虎ノ門から銀座線1駅" },
+      { hub:"築地", line:"hibiya", railMin:11, railFare:180, last:"24:00",
+        taxi:{d:2500,n:3000}, lo:25, hi:30, note:"神谷町・虎ノ門ヒルズから日比谷線" } ] },
+
+  { id:"ginza", name:"銀座・東銀座", aliases:["銀座","東銀座","京橋","銀座一丁目","数寄屋橋"],
+    direct:{ d:2500, n:2900, lo:12, hi:16, toll:0 },
+    hubs:[],
+    transit:{ desc:"有楽町線→豊洲→ゆりかもめ", lo:33, hi:40, fare:390, last:"23:30", line:"yuraku" } },
+
+  { id:"tsukiji", name:"築地・新富町", aliases:["築地","新富町","築地市場"],
+    direct:{ d:2500, n:3000, lo:12, hi:16, toll:0 }, hubs:[] },
+
+  { id:"hamamatsucho", name:"浜松町・大門", aliases:["浜松町","大門","芝公園","竹芝"],
+    direct:{ d:2300, n:2700, lo:11, hi:14, toll:0 }, hubs:[] },
+
+  { id:"tamachi", name:"田町・三田", aliases:["田町","三田","芝浦"],
+    direct:{ d:2100, n:2500, lo:10, hi:13, toll:0 }, hubs:[] },
+
+  { id:"shinagawa", name:"品川", aliases:["品川","高輪","港南"],
+    direct:{ d:2900, n:3400, lo:14, hi:19, toll:640 },
+    hubs:[ { hub:"田町", line:"jr", railMin:5, railFare:160, last:"24:00",
+             taxi:{d:2100,n:2500}, lo:22, hi:27 } ],
+    transit:{ desc:"大井町→りんかい線→国際展示場", lo:32, hi:40, fare:480, last:"23:45", line:"rinkai" } },
+
+  { id:"yurakucho", name:"有楽町・日比谷", aliases:["有楽町","日比谷","帝国ホテル"],
+    direct:{ d:2900, n:3400, lo:14, hi:19, toll:0 },
+    hubs:[ { hub:"豊洲", line:"yuraku", railMin:6, railFare:180, last:"24:05",
+             taxi:{d:1200,n:1400}, lo:20, hi:25 } ],
+    transit:{ desc:"有楽町線→豊洲→ゆりかもめ", lo:28, hi:33, fare:390, last:"23:35", line:"yuraku" } },
+
+  { id:"otemachi", name:"大手町・日本橋", aliases:["大手町","東京駅","日本橋","茅場町","八重洲","丸の内"],
+    direct:{ d:3300, n:3900, lo:16, hi:22, toll:700 },
+    hubs:[ { hub:"門前仲町", line:"tozai", railMin:8, railFare:180, last:"24:10",
+             taxi:{d:1700,n:2000}, lo:22, hi:26 } ],
+    transit:{ desc:"有楽町線→豊洲→ゆりかもめ", lo:40, hi:46, fare:500, last:"23:30", line:"yuraku" } },
+
+  { id:"kudanshita", name:"九段下・神保町", aliases:["九段下","神保町","竹橋","水道橋"],
+    direct:{ d:4000, n:4800, lo:18, hi:24, toll:800 },
+    hubs:[ { hub:"門前仲町", line:"tozai", railMin:11, railFare:210, last:"24:05",
+             taxi:{d:1700,n:2000}, lo:26, hi:31 } ] },
+
+  { id:"bancho", name:"番町・麹町・半蔵門", aliases:["番町","麹町","半蔵門","一番町","四番町","六番町"],
+    direct:{ d:4000, n:4800, lo:19, hi:26, toll:800 },
+    hubs:[ { hub:"豊洲", line:"yuraku", railMin:20, railFare:260, last:"23:55",
+             taxi:{d:1200,n:1400}, lo:32, hi:37 } ],
+    transit:{ desc:"有楽町線→豊洲→ゆりかもめ", lo:45, hi:52, fare:590, last:"23:25", line:"yuraku" } },
+
+  { id:"ichigaya", name:"市ヶ谷", aliases:["市ヶ谷","市谷"],
+    direct:{ d:4200, n:5000, lo:20, hi:27, toll:800 },
+    hubs:[ { hub:"豊洲", line:"yuraku", railMin:21, railFare:260, last:"23:55",
+             taxi:{d:1200,n:1400}, lo:32, hi:37 } ] },
+
+  { id:"nagatacho", name:"永田町・赤坂見附", aliases:["永田町","赤坂見附","平河町","紀尾井町"],
+    direct:{ d:3800, n:4500, lo:17, hi:23, toll:800 },
+    hubs:[ { hub:"豊洲", line:"yuraku", railMin:18, railFare:260, last:"24:00",
+             taxi:{d:1200,n:1400}, lo:29, hi:35 } ] },
+
+  { id:"yotsuya", name:"四谷", aliases:["四谷","四ツ谷","荒木町","しんみち通り"],
+    direct:{ d:4000, n:4800, lo:19, hi:26, toll:800 },
+    hubs:[
+      { hub:"銀座", line:"maru", railMin:12, railFare:180, last:"24:00",
+        taxi:{d:2500,n:2900}, lo:25, hi:30 },
+      { hub:"豊洲", line:"yuraku", railMin:17, railFare:260, last:"23:55",
+        taxi:{d:1200,n:1400}, lo:30, hi:38, note:"永田町乗換" } ] },
+
+  { id:"roppongi", name:"六本木", aliases:["六本木","西麻布","乃木坂","ミッドタウン","六本木ヒルズ"],
+    direct:{ d:3300, n:3900, lo:18, hi:23, toll:700 },
+    hubs:[
+      { hub:"勝どき", line:"oedo", railMin:10, railFare:220, last:"24:00",
+        taxi:{d:1400,n:1700}, lo:28, hi:34 },
+      { hub:"築地", line:"hibiya", railMin:13, railFare:180, last:"24:00",
+        taxi:{d:2500,n:3000}, lo:28, hi:33 } ] },
+
+  { id:"azabujuban", name:"麻布十番", aliases:["麻布十番","麻布","元麻布"],
+    direct:{ d:3300, n:3900, lo:18, hi:23, toll:700 },
+    hubs:[ { hub:"勝どき", line:"oedo", railMin:8, railFare:220, last:"24:00",
+             taxi:{d:1400,n:1700}, lo:28, hi:34 } ] },
+
+  { id:"ebisu", name:"恵比寿", aliases:["恵比寿","広尾"],
+    direct:{ d:3600, n:4300, lo:20, hi:27, toll:700 },
+    hubs:[ { hub:"築地", line:"hibiya", railMin:20, railFare:210, last:"23:55",
+             taxi:{d:2500,n:3000}, lo:32, hi:38 } ] },
+
+  { id:"shibuya", name:"渋谷", aliases:["渋谷","道玄坂","宮益坂","桜丘"],
+    direct:{ d:4400, n:5200, lo:22, hi:30, toll:900 },
+    hubs:[ { hub:"新橋", line:"ginza", railMin:17, railFare:210, last:"24:00",
+             taxi:{d:2500,n:3000}, lo:30, hi:36 } ],
+    transit:{ desc:"大崎→りんかい線→国際展示場", lo:40, hi:48, fare:730, last:"23:35", line:"rinkai" } },
+
+  { id:"shinjuku", name:"新宿", aliases:["新宿","歌舞伎町","西新宿","代々木"],
+    direct:{ d:4700, n:5600, lo:25, hi:34, toll:950 },
+    hubs:[ { hub:"銀座", line:"maru", railMin:16, railFare:210, last:"24:00",
+             taxi:{d:2500,n:2900}, lo:29, hi:35 } ],
+    transit:{ desc:"大崎→りんかい線→国際展示場", lo:42, hi:50, fare:730, last:"23:40", line:"rinkai" } },
+
+  { id:"ikebukuro", name:"池袋", aliases:["池袋"],
+    direct:{ d:5400, n:6400, lo:28, hi:38, toll:1070 },
+    hubs:[ { hub:"豊洲", line:"yuraku", railMin:25, railFare:260, last:"23:50",
+             taxi:{d:1200,n:1400}, lo:36, hi:42 } ],
+    transit:{ desc:"有楽町線→豊洲→ゆりかもめ", lo:48, hi:55, fare:630, last:"23:20", line:"yuraku" } },
+
+  { id:"akihabara", name:"秋葉原・神田", aliases:["秋葉原","神田","岩本町","アキバ"],
+    direct:{ d:3300, n:3900, lo:16, hi:22, toll:700 },
+    hubs:[
+      { hub:"築地", line:"hibiya", railMin:12, railFare:180, last:"24:00",
+        taxi:{d:2500,n:3000}, lo:26, hi:31 },
+      { hub:"豊洲", line:"yuraku", railMin:18, railFare:260, last:"23:55",
+        taxi:{d:1200,n:1400}, lo:31, hi:38, note:"日比谷線→月島乗換" } ] },
+
+  { id:"suehirocho", name:"末広町・湯島", aliases:["末広町","湯島","御徒町"],
+    direct:{ d:3900, n:4600, lo:18, hi:24, toll:700 },
+    hubs:[ { hub:"新橋", line:"ginza", railMin:10, railFare:180, last:"24:05",
+             taxi:{d:2500,n:3000}, lo:26, hi:32 } ] },
+
+  { id:"ueno", name:"上野", aliases:["上野","上野広小路","アメ横"],
+    direct:{ d:4800, n:5600, lo:20, hi:27, toll:800 },
+    hubs:[ { hub:"新橋", line:"ginza", railMin:13, railFare:210, last:"24:05",
+             taxi:{d:2500,n:3000}, lo:28, hi:34 } ] },
+
+  { id:"tsukishima", name:"月島・勝どき", aliases:["月島","勝どき","晴海"],
+    direct:{ d:1300, n:1500, lo:8, hi:12, toll:0 }, hubs:[] },
+
+  { id:"toyosu", name:"豊洲", aliases:["豊洲","新豊洲","ららぽーと"],
+    direct:{ d:1200, n:1400, lo:10, hi:15, toll:0 },
+    hubs:[],
+    transit:{ desc:"ゆりかもめ→有明", lo:15, hi:19, fare:330, last:"23:55", line:"yurikamome" } },
+
+  { id:"monzennakacho", name:"門前仲町", aliases:["門前仲町","門仲","木場"],
+    direct:{ d:1700, n:2000, lo:9, hi:13, toll:0 }, hubs:[] },
+];
+
+/* ============================================================
+   メトロ全駅 自動生成エンジン
+   各路線の駅順序＋ハブ定義から、任意の駅の選択肢を計算で導出。
+   curated ZONES が優先、それ以外の駅をここがカバーする。
+   ============================================================ */
+
+const HUBDEF = {
+  toyosu:   { name:"豊洲",     km:2.2, d:1200, n:1400, tLo:5, tHi:8 },
+  kachidoki:{ name:"勝どき",   km:3.5, d:1400, n:1700, tLo:7, tHi:10 },
+  monnaka:  { name:"門前仲町", km:4.0, d:1700, n:2000, tLo:8, tHi:11 },
+  kiyosumi: { name:"清澄白河", km:3.8, d:1500, n:1800, tLo:8, tHi:11 },
+  tsukiji:  { name:"築地",     km:6.2, d:2500, n:3000, tLo:7, tHi:10 },
+  shinbashi:{ name:"新橋",     km:6.0, d:2500, n:2900, tLo:7, tHi:10 },
+  ginzaHub: { name:"銀座",     km:6.0, d:2500, n:2900, tLo:7, tHi:10 },
+  tamachiHub:{ name:"田町",    km:5.0, d:2100, n:2500, tLo:6, tHi:9 },
+  shiomi:   { name:"潮見",     km:2.5, d:1300, n:1500, tLo:5, tHi:8 },
+};
+
+const METRO = {
+  ginza: { hub:"shinbashi", hubIdx:7, dirCoef:0.65, stations:
+    ["渋谷","表参道","外苑前","青山一丁目","赤坂見附","溜池山王","虎ノ門","新橋","銀座","京橋","日本橋","三越前","神田","末広町","上野広小路","上野","稲荷町","田原町","浅草"] },
+  maru: { hub:"ginzaHub", hubIdx:15, dirCoef:0.7, stations:
+    ["荻窪","南阿佐ケ谷","新高円寺","東高円寺","新中野","中野坂上","西新宿","新宿","新宿三丁目","新宿御苑前","四谷三丁目","四ツ谷","赤坂見附","国会議事堂前","霞ケ関","銀座","東京","大手町","淡路町","御茶ノ水","本郷三丁目","後楽園","茗荷谷","新大塚","池袋"] },
+  hibiya: { hub:"tsukiji", hubIdx:10, dirCoef:0.5, stations:
+    ["中目黒","恵比寿","広尾","六本木","神谷町","虎ノ門ヒルズ","霞ケ関","日比谷","銀座","東銀座","築地","八丁堀","茅場町","人形町","小伝馬町","秋葉原","仲御徒町","上野","入谷","三ノ輪","南千住","北千住"] },
+  tozai: { hub:"monnaka", hubIdx:11, dirCoef:0.85, stations:
+    ["中野","落合","高田馬場","早稲田","神楽坂","飯田橋","九段下","竹橋","大手町","日本橋","茅場町","門前仲町","木場","東陽町","南砂町","西葛西","葛西","浦安","南行徳","行徳","妙典","原木中山","西船橋"] },
+  yuraku: { hub:"toyosu", hubIdx:21, dirCoef:0.95, stations:
+    ["和光市","地下鉄成増","地下鉄赤塚","平和台","氷川台","小竹向原","千川","要町","池袋","東池袋","護国寺","江戸川橋","飯田橋","市ケ谷","麹町","永田町","桜田門","有楽町","銀座一丁目","新富町","月島","豊洲","辰巳","新木場"] },
+  hanzomon: { hub:"kiyosumi", hubIdx:10, dirCoef:0.6, stations:
+    ["渋谷","表参道","青山一丁目","永田町","半蔵門","九段下","神保町","大手町","三越前","水天宮前","清澄白河","住吉","錦糸町","押上"] },
+  chiyoda: { hub:null, hubIdx:null, dirCoef:0.5, stations:
+    ["代々木上原","代々木公園","明治神宮前","表参道","乃木坂","赤坂","国会議事堂前","霞ケ関","日比谷","二重橋前","大手町","新御茶ノ水","湯島","根津","千駄木","西日暮里","町屋","北千住","綾瀬","北綾瀬"],
+    transfers:[
+      { atIdx:10, atName:"大手町", atKm:8.0, addMin:6, thenMin:7, hub:"monnaka", note:"大手町乗換→東西線" },
+      { atIdx:8,  atName:"日比谷", atKm:7.0, addMin:5, thenMin:6, hub:"tsukiji", note:"日比谷乗換→日比谷線" } ] },
+  namboku: { hub:null, hubIdx:null, dirCoef:0.5, stations:
+    ["目黒","白金台","白金高輪","麻布十番","六本木一丁目","溜池山王","永田町","四ツ谷","市ケ谷","飯田橋","後楽園","東大前","本駒込","駒込","西ケ原","王子","王子神谷","志茂","赤羽岩淵"],
+    transfers:[
+      { atIdx:3, atName:"麻布十番", atKm:8.0, addMin:6, thenMin:4,  hub:"kachidoki", note:"麻布十番乗換→大江戸線" },
+      { atIdx:6, atName:"永田町",   atKm:9.0, addMin:5, thenMin:14, hub:"toyosu",    note:"永田町乗換→有楽町線" } ] },
+  fukutoshin: { hub:null, hubIdx:null, dirCoef:0.7, stations:
+    ["和光市","地下鉄成増","地下鉄赤塚","平和台","氷川台","小竹向原","千川","要町","池袋","雑司が谷","西早稲田","東新宿","新宿三丁目","北参道","明治神宮前","渋谷"],
+    transfers:[
+      { atIdx:8,  atName:"池袋", atKm:14.0, addMin:5, thenMin:25, hub:"toyosu",    note:"池袋乗換→有楽町線" },
+      { atIdx:15, atName:"渋谷", atKm:11.0, addMin:7, thenMin:17, hub:"shinbashi", note:"渋谷乗換→銀座線" } ] },
+  yamanote: { loop:true, dirCoef:0.65, minPerStop:2.2, hub:"shinbashi", hubIdx:25,
+    extraHubs:[ { hub:"tamachiHub", idx:27 } ],
+    transit:{ atIdx:0, atName:"大崎", desc:"大崎→りんかい線→国際展示場", thenMin:13, addFare:400, last:"23:35", line:"rinkai" },
+    stations:["大崎","五反田","目黒","恵比寿","渋谷","原宿","代々木","新宿","新大久保","高田馬場","目白","池袋","大塚","巣鴨","駒込","田端","西日暮里","日暮里","鶯谷","上野","御徒町","秋葉原","神田","東京","有楽町","新橋","浜松町","田町","高輪ゲートウェイ","品川"] },
+  keiyo: { dirCoef:0.8, hub:"shiomi", hubIdx:3, stations:
+    ["東京","八丁堀","越中島","潮見","新木場"] },
+  sobu: { dirCoef:0.6, hub:null, hubIdx:null,
+    transfers:[
+      { atIdx:8,  atName:"市ケ谷", atKm:10.0, addMin:6, thenMin:21, hub:"toyosu",  note:"市ケ谷乗換→有楽町線" },
+      { atIdx:12, atName:"秋葉原", atKm:8.0,  addMin:6, thenMin:12, hub:"tsukiji", note:"秋葉原乗換→日比谷線" } ],
+    stations:["中野","東中野","大久保","新宿","代々木","千駄ケ谷","信濃町","四ツ谷","市ケ谷","飯田橋","水道橋","御茶ノ水","秋葉原","浅草橋","両国","錦糸町"] },
+  oedo: { loop:true, dirCoef:0.7, hub:"kachidoki", hubIdx:17, stations:
+    ["都庁前","新宿西口","東新宿","若松河田","牛込柳町","牛込神楽坂","飯田橋","春日","本郷三丁目","上野御徒町","新御徒町","蔵前","両国","森下","清澄白河","門前仲町","月島","勝どき","築地市場","汐留","大門","赤羽橋","麻布十番","六本木","青山一丁目","国立競技場","代々木","新宿"] },
+  oedoBranch: { dirCoef:0.7, hub:null, hubIdx:null,
+    transfers:[ { atIdx:0, atName:"都庁前", atKm:13.0, addMin:3, thenMin:36, hub:"kachidoki", note:"大江戸線環状部経由" } ],
+    stations:["都庁前","西新宿五丁目","中野坂上","東中野","中井","落合南長崎","新江古田","練馬","豊島園","練馬春日町","光が丘"] },
+  toeiasakusa: { dirCoef:0.6, hub:"shinbashi", hubIdx:9, stations:
+    ["西馬込","馬込","中延","戸越","五反田","高輪台","泉岳寺","三田","大門","新橋","東銀座","宝町","日本橋","人形町","東日本橋","浅草橋","蔵前","浅草","本所吾妻橋","押上"] },
+  mita: { dirCoef:0.65, hub:"tamachiHub", hubIdx:3, stations:
+    ["目黒","白金台","白金高輪","三田","芝公園","御成門","内幸町","日比谷","大手町","神保町","水道橋","春日","白山","千石","巣鴨","西巣鴨","新板橋","板橋区役所前","板橋本町","本蓮沼","志村坂上","志村三丁目","蓮根","西台","高島平","新高島平","西高島平"] },
+  toeishinjuku: { dirCoef:0.6, hub:null, hubIdx:null,
+    transfers:[
+      { atIdx:10, atName:"森下",   atKm:6.0, addMin:5, thenMin:7,  hub:"kachidoki", note:"森下乗換→大江戸線" },
+      { atIdx:4,  atName:"九段下", atKm:9.0, addMin:5, thenMin:10, hub:"monnaka",   note:"九段下乗換→東西線" } ],
+    stations:["新宿","新宿三丁目","曙橋","市ケ谷","九段下","神保町","小川町","岩本町","馬喰横山","浜町","森下","菊川","住吉","西大島","大島","東大島","船堀","一之江","瑞江","篠崎","本八幡"] },
+};
+
+/* 直行距離の実測補正（湾岸寄り駅は|Δidx|モデルが過大になるため） */
+const OVERRIDE_KM = {
+  "木場":3.4, "東陽町":4.0, "南砂町":4.8, "西葛西":6.0, "葛西":6.8,
+  "辰巳":2.6, "新木場":3.6, "浅草":7.5, "築地市場":5.5, "八丁堀":5.5, "目黒":10.8, "五反田":9.5, "白金台":9.8, "大崎":9.8, "越中島":3.0, "潮見":2.5, "中目黒":10.5, "北千住":11.0, "水天宮前":5.0, "住吉":4.5, "錦糸町":5.5, "押上":6.2,
+};
+
+const norm = (s)=> s.replace(/ヶ/g,"ケ").replace(/駅$/,"").trim();
+
+/* 駅名 → [{line, idx}] の逆引きマップ（複数路線は統合） */
+const STMAP = (()=>{
+  const m = {};
+  Object.entries(METRO).forEach(([line, L])=>{
+    L.stations.forEach((st,idx)=>{
+      const k = norm(st);
+      (m[k] = m[k] || []).push({ line, idx });
+    });
+  });
+  return m;
+})();
+
+const fareN = (km)=> Math.round((500 + Math.max(0, km-0.91)*472)/100)*100;
+const fareD = (km)=> Math.round((500 + Math.max(0, km-1.10)*392)/100)*100;
+const fareRail = (min)=> min<=6?180 : min<=15?210 : min<=25?260 : 320;
+const tollOf = (km)=> km<7?0 : km<9?700 : km<12?900 : 1070;
+
+function genStationZone(stName) {
+  const entries = STMAP[norm(stName)];
+  if (!entries) return null;
+  const hubs = [];
+  const kms = [];
+  let transit = null;
+  const push = (hd, line, railMin, note, last)=>{
+    hubs.push({ hub:hd.name, line, railMin, railFare:fareRail(railMin), last: last||"23:55",
+      taxi:{d:hd.d, n:hd.n}, note: note||null,
+      lo: 5+railMin+4+hd.tLo, hi: 5+railMin+5+hd.tHi+2 });
+  };
+  entries.forEach(({line, idx})=>{
+    const L = METRO[line];
+    const N = L.stations.length;
+    const D = (a,b)=> L.loop ? Math.min(Math.abs(a-b), N-Math.abs(a-b)) : Math.abs(a-b);
+    const mps = L.minPerStop || 2.1;
+    const coef = L.dirCoef || 0.7;
+    const anchors = [];
+    if (L.hub) anchors.push({ hd:HUBDEF[L.hub], idx:L.hubIdx });
+    (L.extraHubs||[]).forEach(e=> anchors.push({ hd:HUBDEF[e.hub], idx:e.idx }));
+    anchors.forEach(a=>{
+      kms.push(a.hd.km + D(idx,a.idx)*coef);
+      if (norm(stName) !== a.hd.name)
+        push(a.hd, line, Math.max(2, Math.round(D(idx,a.idx)*mps)));
+    });
+    (L.transfers||[]).forEach(tr=>{
+      const hd = HUBDEF[tr.hub];
+      const seg1 = Math.max(2, Math.round(D(idx,tr.atIdx)*mps));
+      kms.push(tr.atKm + D(idx,tr.atIdx)*coef);
+      if (norm(stName) !== hd.name)
+        push(hd, line, seg1+tr.addMin+tr.thenMin, tr.note, "23:50");
+    });
+    if (L.transit) {
+      const t = L.transit;
+      const seg1 = Math.round(D(idx,t.atIdx)*mps);
+      const lo = 5+seg1+6+t.thenMin+4;
+      const cand = { desc:t.desc, lo, hi:lo+8,
+        fare:(seg1?fareRail(seg1):0)+t.addFare, last:t.last, line:t.line };
+      if (!transit || cand.lo < transit.lo) transit = cand;
+    }
+  });
+  const seen = {};
+  const dedup = hubs.sort((a,b)=>a.lo-b.lo).filter(h=>{
+    if (seen[h.hub] !== undefined) return false;
+    seen[h.hub] = 1; return true;
+  }).slice(0,3);
+  const km = OVERRIDE_KM[norm(stName)] ?? Math.min(...kms);
+  const dLo = Math.round(4 + km*1.6);
+  const z = {
+    id:"st:"+norm(stName), name:stName+"駅", aliases:[], generated:true,
+    direct:{ d:fareD(km), n:fareN(km), lo:dLo, hi:Math.round(dLo*1.35)+2, toll:tollOf(km) },
+    hubs: dedup,
+  };
+  if (transit) z.transit = transit;
+  return z;
+}
+
+const toMin = (s) => { const [h,m] = s.split(":").map(Number); return (h>=24?h-24+24:h)*60+m; };
+const fmtYen = (v) => v.toLocaleString("ja-JP");
+
+function buildOptions(zone, timeMin, weekend) {
+  const h = Math.floor(timeMin/60);
+  const night = h>=22 || h<5;
+  const rush = !weekend && h>=17 && h<20;
+  // 深夜0時台以降の比較用: 終電判定は当日24時基準スケールに正規化
+  const depBase = h<5 ? timeMin+1440 : timeMin;
+  const ACCESS = 5; // 駅アクセス目安
+
+  const opts = [];
+
+  // 直行タクシー
+  {
+    const base = night ? zone.direct.n : zone.direct.d;
+    const fare = Math.round((rush ? base*1.1 : base)/100)*100;
+    const taxi = fare; // 首都高は「下道指定」を既定とし表示のみ
+    opts.push({
+      id:"direct", kind:"taxi", label:"直行タクシー",
+      steps:[{t:"taxi", txt:`🚕 直行 ${zone.direct.lo}–${rush?Math.round(zone.direct.hi*1.5):zone.direct.hi}分`}],
+      taxi, total:taxi, lo:zone.direct.lo,
+      hi: rush ? Math.round(zone.direct.hi*1.5) : zone.direct.hi,
+      toll: zone.direct.toll,
+      note: zone.direct.toll ? `首都高利用なら +${fmtYen(zone.direct.toll)}円` : null,
+      available:true,
+    });
+  }
+
+  // ハブ（鉄道＋タクシー）
+  zone.hubs.forEach((hb,i)=>{
+    const lastM = hb.last.startsWith("24") ? 1440 + Number(hb.last.split(":")[1]) : toMin(hb.last);
+    const available = depBase + ACCESS <= lastM;
+    const remain = lastM - (depBase + ACCESS);
+    const base = night ? hb.taxi.n : hb.taxi.d;
+    const fare = Math.round((rush ? base*1.05 : base)/100)*100;
+    const hw = headwayOf(hb.line, h);
+    const wExtra = Math.max(0, hw - 5);
+    opts.push({
+      id:"hub"+i, kind:"hub", label:`${hb.hub}ハブ`,
+      steps:[
+        {t:"rail", line:hb.line, txt:`${LINE[hb.line].n} ${hb.railMin}分`},
+        {t:"hub", txt:hb.hub},
+        {t:"taxi", txt:`🚕 ラストマイル`},
+      ],
+      taxi:fare, total:fare+hb.railFare,
+      lo: hb.lo + Math.round(wExtra*0.3), hi: hb.hi + wExtra, headway: hw,
+      available, remain: available && remain<=45 ? remain : null,
+      note: hb.note || null, last: hb.last,
+    });
+  });
+
+  // 公共交通のみ
+  if (zone.transit) {
+    const t = zone.transit;
+    const lastM = t.last.startsWith("24") ? 1440 + Number(t.last.split(":")[1]) : toMin(t.last);
+    const available = depBase + ACCESS <= lastM;
+    const remain = lastM - (depBase + ACCESS);
+    const hwT = headwayOf(t.line, h);
+    const wT = Math.max(0, hwT - 5);
+    opts.push({
+      id:"transit", kind:"transit", label:"公共交通のみ",
+      steps:[{t:"rail", line:t.line, txt:t.desc}],
+      taxi:0, total:t.fare, lo:t.lo + Math.round(wT*0.3), hi:t.hi + wT, headway:hwT,
+      available, remain: available && remain<=45 ? remain : null, last:t.last,
+    });
+  }
+
+  return { opts, night, rush };
+}
+
+const CAP = 3000;
+
+/* 路線×時間帯の運行間隔モデル（分）。分単位の時刻表はClaude Code版でAPI連携予定。
+   待ち時間は基準5分間隔を内包済みのため、超過分のみ加算する。 */
+function headwayOf(line, h) {
+  const late = (h>=23 || h<1);
+  if (line==="yamanote") return late ? 7 : 4;
+  if (line==="yurikamome" || line==="rinkai") return late ? 10 : h>=22 ? 8 : 6;
+  if (line==="oedo" || line==="oedoBranch") return late ? 9 : h>=22 ? 7 : 6;
+  return late ? 10 : h>=22 ? 7 : 5;
+}
+
+function recommend(opts) {
+  const avail = opts.filter(o=>o.available);
+  const feasible = avail.filter(o=>o.taxi<=CAP);
+  const pool = feasible.length ? feasible : avail;
+  const sorted = [...pool].sort((a,b)=>{
+    const ma=(a.lo+a.hi)/2, mb=(b.lo+b.hi)/2;
+    if (Math.abs(ma-mb)<=5) return a.total-b.total;
+    return ma-mb;
+  });
+  const best = sorted[0];
+  // 代替案は上限超過・終電後も含め全選択肢を表示（利用可→時間順、不可は末尾）
+  const others = opts.filter(o=>o!==best).sort((a,b)=>{
+    if (a.available!==b.available) return a.available ? -1 : 1;
+    return (a.lo+a.hi)-(b.lo+b.hi);
+  });
+  return { best, capOK: feasible.length>0, others };
+}
+
+
+
+/* ============ バニラJS UI ============ */
+const $ = id => document.getElementById(id);
+const nowD = new Date();
+$("tm").value = String(nowD.getHours()).padStart(2,"0")+":"+String(nowD.getMinutes()).padStart(2,"0");
+let weekend = [0,6].includes(nowD.getDay());
+$("wk").textContent = weekend ? "土日祝" : "平日";
+$("wk").onclick = ()=>{ weekend=!weekend; $("wk").textContent = weekend?"土日祝":"平日"; rerender(); };
+$("tm").onchange = rerender;
+let currentZone = null;
+
+function findMatches(qs){
+  const s = norm(qs);
+  if(!s) return [];
+  const zoneHits = ZONES.filter(z =>
+    z.name.includes(s) || z.aliases.some(a => norm(a).includes(s) || s.includes(norm(a)))
+  ).map(z=>({id:z.id,label:z.name}));
+  const covered = new Set(ZONES.flatMap(z=>z.aliases.map(norm)));
+  const stHits = Object.keys(STMAP)
+    .filter(st => (st.includes(s)||s.includes(st)) && !covered.has(st))
+    .map(st=>({id:"st:"+st,label:st+"駅"}));
+  return [...zoneHits,...stHits].slice(0,6);
+}
+function zoneOf(id){ return id.startsWith("st:") ? genStationZone(id.slice(3)) : ZONES.find(z=>z.id===id); }
+
+function resolveNow(){
+  const qs = $("q").value.trim();
+  if(!qs) return;
+  $("aimsg").innerHTML=""; $("chips").innerHTML="";
+  const matches = findMatches(qs);
+  if(matches.length===0){ aiResolve(qs); return; }
+  const s = norm(qs);
+  const exact = matches.find(m => m.id==="st:"+s ||
+    (ZONES.find(z=>z.id===m.id)?.aliases||[]).some(a=>norm(a)===s));
+  if(exact){ setZone(exact.id); return; }
+  if(matches.length===1){ setZone(matches[0].id); return; }
+  $("chips").className="chips";
+  $("chips").innerHTML = '<p style="font-size:11px;color:var(--sub);width:100%">複数候補あり。どれ？</p>' +
+    matches.map(m=>`<button class="chip" onclick="setZone('${m.id}')">${m.label}</button>`).join("");
+}
+window.setZone = (id)=>{ currentZone = zoneOf(id); $("chips").innerHTML=""; rerender(); };
+$("go").onclick = resolveNow;
+$("q").addEventListener("keydown", e=>{ if(e.key==="Enter"){ e.target.blur(); resolveNow(); } });
+$("q").addEventListener("input", ()=>{ $("chips").innerHTML=""; });
+
+async function aiResolve(qs){
+  $("aimsg").className="msg"; $("aimsg").textContent="AI判定中…";
+  try{
+    const res = await fetch("https://api.anthropic.com/v1/messages",{
+      method:"POST",headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({model:"claude-sonnet-4-6",max_tokens:1000,
+        messages:[{role:"user",content:'東京の場所「'+qs+'」から徒歩で最も近い鉄道駅名を1つ答えよ（東京メトロ・都営地下鉄・JRの正式駅名のみ）。不明なら "none"。JSONのみで回答: {"station":"駅名"}'}]})});
+    const data = await res.json();
+    const text = (data.content||[]).filter(c=>c.type==="text").map(c=>c.text).join("");
+    const st = norm(JSON.parse(text.replace(/```json|```/g,"").trim()).station||"");
+    const cz = ZONES.find(z=>z.aliases.some(a=>norm(a)===st));
+    if(cz){ $("aimsg").textContent='「'+qs+'」→ '+cz.name+' と判定'; setZone(cz.id); }
+    else if(STMAP[st]){ $("aimsg").textContent='「'+qs+'」→ 最寄り '+st+'駅 と判定'; setZone("st:"+st); }
+    else $("aimsg").textContent="該当駅を特定できず。駅名で再入力を。";
+  }catch(e){
+    $("aimsg").textContent="AI判定はClaude.ai上でのみ動作。231駅の辞書は使えるので駅名・地名で入力を。";
+  }
+}
+
+function stepHtml(st){
+  if(st.t==="rail") return '<span class="st" style="border-left:3px solid '+LINE[st.line].c+'">'+st.txt+'</span>';
+  if(st.t==="hub") return '<span class="st" style="color:var(--amber)">'+st.txt+'</span>';
+  return '<span class="st">'+st.txt+'</span>';
+}
+
+function rerender(){
+  if(!currentZone) return;
+  const zone = currentZone;
+  const timeMin = toMin($("tm").value || "23:00");
+  const {opts,night,rush} = buildOptions(zone,timeMin,weekend);
+  const {best,capOK,others} = recommend(opts);
+  let h = '<div class="ctx"><span>'+zone.name+' 発</span>';
+  if(night) h+='<span class="badge" style="background:#2A1E3F;color:#C9A7F5">深夜割増 ×1.2</span>';
+  if(rush) h+='<span class="badge" style="background:#3F2A1E;color:#F5C9A7">夕ラッシュ補正</span>';
+  h+='</div>';
+  h+='<div class="best"><div class="bl">▍最適解</div><div class="bt">'+best.label+'</div>';
+  h+='<div class="steps">'+best.steps.map(stepHtml).join("")+'</div>';
+  h+='<div class="nums mono">';
+  h+='<div><div class="nl">所要</div><div class="nv">'+best.lo+'–'+best.hi+'<small>分</small></div></div>';
+  h+='<div><div class="nl">総額</div><div class="nv">¥'+fmtYen(best.total)+'</div></div>';
+  h+='<div><div class="nl">タクシー分</div><div style="font-size:17px;color:'+(best.taxi<=CAP?'var(--ok)':'var(--warn)')+'">¥'+fmtYen(best.taxi)+'</div></div></div>';
+  if(best.taxi===CAP) h+='<p class="warn">⚠ 上限張り付き。乗車時「下道で」を指定</p>';
+  if(best.remain) h+='<p class="warn">⏱ 終電まで約'+best.remain+'分（'+best.last+'発が最終目安）</p>';
+  if(best.headway) h+='<p class="info">🚃 この時間帯の運行間隔 約'+best.headway+'分（待ち時間は所要に反映済み）</p>';
+  if(best.note) h+='<p class="info">'+best.note+'</p>';
+  if(!capOK) h+='<p class="warn">⚠ 全選択肢が上限¥3,000超過（終電後）。最安案を表示。</p>';
+  h+='</div>';
+  h+='<div class="alts">'+others.map(o=>
+    '<div class="alt'+(o.available?'':' na')+'"><div class="al">'+o.label+
+    (!o.available?'<span class="bad">終電終了</span>':(o.taxi>CAP?'<span class="bad">上限超過</span>':''))+
+    (o.note?'<div class="sm">'+o.note+'</div>':'')+
+    '</div><div class="ar mono">'+o.lo+'–'+o.hi+'分<div class="sm" style="color:'+(o.taxi<=CAP?'var(--sub)':'var(--warn)')+'">¥'+fmtYen(o.total)+'</div></div></div>'
+  ).join("")+'</div>';
+  h+='<p class="ft">設計値: door-to-door推定±3分（生成駅は±15%）。運賃は2026年7月現行（初乗¥500・深夜2割増）。終電・運行間隔は静的目安。首都高利用時は別途。最終確認は乗換案内アプリで。</p>';
+  $("out").innerHTML = h;
+}
+</script>
+</body>
+</html>
