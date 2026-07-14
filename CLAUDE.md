@@ -57,12 +57,15 @@ v0.5でおでかけ方向（有明→都内）を追加（2026-07-14オーナー
 - おでかけ方向の終電・終バスは有明側発の近似値。ハブ鉄道の最終は帰宅用の値を流用（近似）
 - オーナーからの実測フィードバックで OVERRIDE_KM / lo,hi / headwayOf を随時較正する運用
 
-## 直近タスク（このセッションでやること）
-1. ~~GitHubリポジトリ `ariake-navi` を作成し、この index.html + CLAUDE.md をコミット~~ ✅ 完了（2026-07-13）
-2. ~~GitHub Pages を有効化（main / root）。公開URLを確認して報告~~ ✅ 完了
-   - リポジトリ: https://github.com/fugangliang/ariake-navi （public）
-   - 公開URL: **https://fugangliang.github.io/ariake-navi/**
-3. オーナーがiPhone Safariで開き「ホーム画面に追加」して完了 ← RF作業待ち
+## 直近タスク（次回セッション）
+- リポジトリ: https://github.com/fugangliang/ariake-navi （public）
+- 公開URL: **https://fugangliang.github.io/ariake-navi/**
+- v0.5（双方向化＋BRT・都バス統合）は実装・テスト・公開済み（2026-07-14）
+1. RFのiPhone実機でv0.5動作確認（モード切替・バス選択肢の表示）← RF作業待ち
+2. バス仮置き値の較正（RFの実測待ち）: 新橋発BRT最終(22:50仮)／都05-2有明発最終(22:00仮)／
+   海01終発(21:30台仮)／自宅→有明テニスの森BRT停留所の徒歩分(7分仮)
+   → 較正先は index.html の `BUSROUTE`（lastHome/lastOut/walkHome）
+3. 保留中の指摘事項なし。新規改修はRF指示ベースで着手
 
 ## 中期ロードマップ（優先順）
 1. **ODPT API連携**（公共交通オープンデータセンター、要開発者登録・無料）
